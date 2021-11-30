@@ -1,49 +1,31 @@
-SHELL = /bin/sh
-CC = gcc
-FLAGS = -std=c99
-N_TEMP = temp.a
-CFLAGS = -Werror -Wall -Wextra -c -g
-LIBFT = ./libft/libft.a
-
 NAME = libftprintf.a
 
-SOURCES = malloc.c \
-		  free.c \
-		  write.c \
-		  va_start.c \
-		  va_arg.c \
-		  va_copy.c \
-		  va_end.c \
-HEADERS = libftprintf.h \
-OBJECTS = $(SOURCES:.c=.o)
-BONUS_OBJECTS = $(BONUS:.c=.o)
+SRCS = srcs/intunsignedint.c \
+		srcs/hex-pointer-string-character.c \
+		srcs/ft_printf.c \
 
-PREFIX = $(DESTDIR)/usr/local
-BINDIR = $(PREFIX)/bin
+OBJS = $(SRCS:.c=.o)
+
+CFLAGS = -Wall -Wextra -Werror
+
+%.o: %.c
+	gcc -c $(CFLAGS) -Iheaders $< -o $(<:.c=.o)
 
 all: $(NAME)
 
-
-$(NAME): $(OBJECTS)
-	ar	rcs $(NAME)	$(OBJECTS)
-
-$(OBJECT): $(SRC)
-	$(CC)	$(FLAGS)	$(CFLAGS)	-o	$(NAME) $(OBJECTS) $(HEADERS)
+$(NAME): $(OBJS)
+	$(MAKE) -C ./libft
+	cp libft/libft.a $(NAME)
+	ar -rcs $(NAME) $(OBJS)
 
 clean:
-	$(MAKE) bonus -C ./libft
-	cp libft/libft.a $(NAME)
-	$(CC) $(FLAGS) $(INCLUDES) $(SOURCES)
-	ar -rcs $(NAME) $(OBJECTS)
+	$(MAKE) clean -C ./libft
+	rm -f $(NAME) $(OBJS)
 
-fclean: clean
+fclean:
 	$(MAKE) fclean -C ./libft
-	rm -rf $(NAME)
-	@echo "[INFO] Library [$(NAME)] removed!"
+	rm -f $(NAME) $(OBJS)
 
-#For when you fucked up
-re: fclean	all
+re: fclean all
 
-.PHONY
-	all clan fclean re
-
+.PHONY: all clean fclean re $(NAME)
